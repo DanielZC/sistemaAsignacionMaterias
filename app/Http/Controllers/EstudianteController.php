@@ -71,9 +71,12 @@ class EstudianteController extends Controller
             'telefono' => ['required', 'min_digits:10', 'max_digits:10', 'integer'],
             'email' => ['required', 'email', Rule::unique('estudiantes', 'email')],
             'semestre' => ['required', 'integer', 'between:1,17'],
+            'asignaturas' => ['required'],
             'direccion' => ['required', 'min:4', 'max:200'],
             'ciudad' => ['required', 'min:4', 'max:30']
         ])->validate();
+
+        $asignaturas = explode(',', $request->asignaturas[0]);
 
         $estudiante = new EstudianteModel();
 
@@ -84,7 +87,7 @@ class EstudianteController extends Controller
         $estudiante->semestre = trim($request->semestre);
         $estudiante->direccion = $this->formato->inicialesMayuscula($request->direccion);
         $estudiante->ciudad = $this->formato->pirmeraMayuscula($request->ciudad);
-        $estudiante->asignaturas = json_encode(array(1,2,3));
+        $estudiante->asignaturas = json_encode($asignaturas);
         $estudiante->creado = $this->fecha->toDateTimeLocalString();
         $estudiante->save();
 
@@ -99,10 +102,13 @@ class EstudianteController extends Controller
             'documento' => ['required', 'min_digits:7', 'integer', Rule::unique('estudiantes', 'documento')],
             'telefono' => ['required', 'min_digits:10', 'max_digits:10', 'integer'],
             'email' => ['required', 'email', Rule::unique('estudiantes', 'email')],
-            'telefono' => ['required', 'min_digits:10', 'max_digits:10', 'integer'],
+            'semestre' => ['required', 'integer', 'between:1,17'],
+            'asignaturas' => ['required'],
             'direccion' => ['required', 'min:4', 'max:200'],
             'ciudad' => ['required', 'min:4', 'max:30']
         ])->validate();
+
+        $asignaturas = explode(',', $request->asignaturas[0]);
 
         $estudiante = EstudianteModel::findOrFail($request->id);
 
@@ -113,7 +119,7 @@ class EstudianteController extends Controller
         $estudiante->semestre = trim($request->semestre);
         $estudiante->direccion = $this->formato->inicialesMayuscula($request->direccion);
         $estudiante->ciudad = $this->formato->pirmeraMayuscula($request->ciudad);
-        $estudiante->asignaturas = json_encode(array(1,2,3));
+        $estudiante->asignaturas = json_encode($asignaturas);
         $estudiante->actualizado = $this->fecha->toDateTimeLocalString();
         $estudiante->save();
 

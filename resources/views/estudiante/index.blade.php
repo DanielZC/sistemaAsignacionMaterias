@@ -7,6 +7,7 @@
         $vTelefono = old('telefono');
         $vCiudad = old('ciudad');
         $vSemestre = old('semestre');
+        $vAsignaturas = old('asignaturas') == '' ? old('asignaturas') : old('asignaturas')[0];
         $vDireccion = old('direccion');
     }
     else 
@@ -17,6 +18,7 @@
         $vTelefono = old('telefono') != '' ? old('telefono') : $estudiante->telefono;
         $vCiudad = old('ciudad') != '' ? old('ciudad') : $estudiante->ciudad;
         $vSemestre = old('semestre') != '' ? old('semestre') : $estudiante->semestre;
+        $vAsignaturas = old('asignaturas') != '' ? old('asignaturas')[0] : $estudiante->asignaturas;
         $vDireccion = old('direccion') != '' ? old('direccion') : $estudiante->direccion;
     }
 @endphp
@@ -28,7 +30,7 @@
                 <h5>Crear nuevo estudiante</h5>
             </div>
             <div class="card-body">
-                <form action="{{ route($url) }}" method="post">
+                <form action="{{ route($url) }}" id="formAsignarMateria" method="post">
                     @csrf
                     @if ($estudiante != null)
                         @method('PUT')
@@ -149,10 +151,10 @@
                                                 <td>{{ $asignatura->tipo }}</td>
                                                 <td>
                                                     <div class="d-flex justify-content-center">
-                                                        <button type="button" class="btn btn-sm text-primary" name="asignar" data="{{ $asignatura->id }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Asignar">
+                                                        <button type="button" class="btn btn-sm text-primary" id="btnAsignar_{{ $asignatura->id }}" name="asignar" data="{{ $asignatura->id }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Asignar">
                                                             <i class="fa-solid fa-check"></i>
                                                         </button>
-                                                        <button type="button" class="btn btn-sm text-danger" name="desasignar" data="{{ $asignatura->id }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Desasignar">
+                                                        <button type="button" class="btn btn-sm text-danger" id="btnDesasignar_{{ $asignatura->id }}" name="desasignar" data="{{ $asignatura->id }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Desasignar">
                                                             <i class="fa-solid fa-xmark"></i>
                                                         </button>
                                                     </div>
@@ -175,8 +177,15 @@
                         <div class="mb-3">
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="row g-2" id="listaMaterias">
-        
+                                    <h5>Asignaturas seleccionadas</h5>
+                                    <hr class="my-0">
+                                    <input type="hidden" name="asignaturas[]" id="asignaturas" value="{{ $vAsignaturas }}" data="">
+                                    <small class="text-danger" id="errorAsignacion"></small>
+                                    @error('asignaturas')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                    <div class="row mt-1 g-2" id="listaMaterias" style="height: 100px; overflow: auto">
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -185,7 +194,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="d-grid gap-2">
-                                <button type="sudmit" class="btn btn-primary">Guardar</button>
+                                <button type="sudmit" class="btn btn-primary" id="btnEnviar">Guardar</button>
                                 @if ($estudiante != null)
                                     <a href="{{ route('estudiante.index') }}" class="btn btn-secondary">Cancelar edicion de registro</a>                                    
                                 @endif
