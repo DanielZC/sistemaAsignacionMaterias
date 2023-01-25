@@ -178,6 +178,7 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h5>Asignaturas seleccionadas</h5>
+                                    <h6>Cretidos: <span id="creditos">0</span></h6>
                                     <hr class="my-0">
                                     <input type="hidden" name="asignaturas[]" id="asignaturas" value="{{ $vAsignaturas }}" data="">
                                     <small class="text-danger" id="errorAsignacion"></small>

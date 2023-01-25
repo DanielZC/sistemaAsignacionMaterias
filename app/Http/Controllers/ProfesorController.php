@@ -24,7 +24,7 @@ class ProfesorController extends Controller
     {
         $url = $id == null ? 'profesor.crear' : 'profesor.editar';
         $profesor = $id != null ? ProfesorModel::findOrFail($id) : null;
-        $profesores = ProfesorModel::paginate(5);
+        $profesores = ProfesorModel::all();
 
         return view('profesor.index', ['profesores' => $profesores, 'profesor' => $profesor, 'url' => $url]);
     }
@@ -85,9 +85,9 @@ class ProfesorController extends Controller
         Validator::make($request->all(), [
             'id' => ['required', 'exists:profesores,id', 'integer'],
             'nombre' => ['required', 'min:4', 'max:50'],
-            'documento' => ['required', 'min_digits:7', 'integer', Rule::unique('profesores', 'documento')],
+            'documento' => ['required', 'min_digits:7', 'integer', Rule::unique('profesores', 'documento')->ignore($request->id)],
             'telefono' => ['required', 'min_digits:10', 'max_digits:10', 'integer'],
-            'email' => ['required', 'email', Rule::unique('profesores', 'email')],
+            'email' => ['required', 'email', Rule::unique('profesores', 'email')->ignore($request->id)],
             'direccion' => ['required', 'min:4', 'max:200'],
             'ciudad' => ['required', 'min:4', 'max:30']
         ])->validate();

@@ -1,8 +1,5 @@
 $(document).ready(function(){
-
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-
+    
     const swalWithBootstrapButtons = Swal.mixin()
 
     const modal = new bootstrap.Modal('#ModalInformacion')      
@@ -18,24 +15,26 @@ $(document).ready(function(){
         }
     })
 
-    document.getElementById('btnEliminar').addEventListener('click', function(e){
-        e.preventDefault()
-        console.log('hola')
-
-        swalWithBootstrapButtons.fire({
-            title: '¿Desea eliminar el registro?',
-            text: "Esta accion no podra ser revertida",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#0d6efd',
-            confirmButtonText: 'Si',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true
-        })
-        .then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('formularioEliminar').submit()
-            }
+    document.getElementsByName('btnEliminar').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault()
+    
+            swalWithBootstrapButtons.fire({
+                title: '¿Desea eliminar el registro?',
+                text: "Esta accion no podra ser revertida",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                confirmButtonText: 'Si',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    let formulario = this.parentNode
+                    formulario.submit()
+                }
+            })
         })
     })
 
@@ -70,7 +69,6 @@ $(document).ready(function(){
                         }
                         else
                         {
-                            console.log(response)
                             Toast.fire({
                                 icon: 'error',
                                 title: 'El parametro enviado no cumple los requisitos'

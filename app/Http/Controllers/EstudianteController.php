@@ -26,7 +26,7 @@ class EstudianteController extends Controller
     {
         $url = $id == null ? 'estudiante.crear' : 'estudiante.editar';
         $estudiante = $id != null ? EstudianteModel::findOrFail($id) : null;
-        $estudiantes = EstudianteModel::paginate(5);
+        $estudiantes = EstudianteModel::all();
         $asignaturas = AsignaturaModel::all(['id', 'nombre', 'creditos', 'tipo']);
 
         return view('estudiante.index', [
@@ -77,7 +77,6 @@ class EstudianteController extends Controller
         ])->validate();
 
         $asignaturas = explode(',', $request->asignaturas[0]);
-
         $estudiante = new EstudianteModel();
 
         $estudiante->nombre = $this->formato->inicialesMayuscula($request->nombre);
@@ -90,6 +89,8 @@ class EstudianteController extends Controller
         $estudiante->asignaturas = json_encode($asignaturas);
         $estudiante->creado = $this->fecha->toDateTimeLocalString();
         $estudiante->save();
+        
+        $this->asosiarMaterias($estudiante->id, $asignaturas);
 
         return redirect()->route('estudiante.index')->with('creado', true);
     }
@@ -99,9 +100,9 @@ class EstudianteController extends Controller
         Validator::make($request->all(), [
             'id' => ['required', 'exists:estudiantes,id', 'integer'],
             'nombre' => ['required', 'min:4', 'max:50'],
-            'documento' => ['required', 'min_digits:7', 'integer', Rule::unique('estudiantes', 'documento')],
+            'documento' => ['required', 'min_digits:7', 'integer', Rule::unique('estudiantes', 'documento')->ignore($request->id)],
             'telefono' => ['required', 'min_digits:10', 'max_digits:10', 'integer'],
-            'email' => ['required', 'email', Rule::unique('estudiantes', 'email')],
+            'email' => ['required', 'email', Rule::unique('estudiantes', 'email')->ignore($request->id)],
             'semestre' => ['required', 'integer', 'between:1,17'],
             'asignaturas' => ['required'],
             'direccion' => ['required', 'min:4', 'max:200'],
@@ -109,8 +110,8 @@ class EstudianteController extends Controller
         ])->validate();
 
         $asignaturas = explode(',', $request->asignaturas[0]);
-
         $estudiante = EstudianteModel::findOrFail($request->id);
+        $materiasV = $estudiante->asignaturas;
 
         $estudiante->nombre = $this->formato->inicialesMayuscula($request->nombre);
         $estudiante->documento = trim($request->documento);
@@ -122,6 +123,9 @@ class EstudianteController extends Controller
         $estudiante->asignaturas = json_encode($asignaturas);
         $estudiante->actualizado = $this->fecha->toDateTimeLocalString();
         $estudiante->save();
+
+        $this->asosiarMaterias($estudiante->id, $asignaturas);
+        $this->desasosiar($estudiante->id, $asignaturas, $materiasV);
 
         return redirect()->route('estudiante.index')->with('actualizado', true);
     }
@@ -136,5 +140,46 @@ class EstudianteController extends Controller
         $estudiante->delete();
 
         return redirect()->route('estudiante.index')->with('eliminado', true);
+    }
+
+    public function asosiarMaterias($idEstudiante, $materiasN)
+    {
+        $materiasN = $materiasN;
+
+        foreach ($materiasN as $key => $id) 
+        {
+            $materia = AsignaturaModel::findOrFail($id);
+
+            $estudiantes = $materia->estudiantes != '' ? json_decode($materia->estudiantes) : array();
+
+            if(!in_array($idEstudiante, $estudiantes))
+            {
+                array_push($estudiantes, $idEstudiante);
+                $materia->estudiantes = json_encode($estudiantes);
+                $materia->actualizado = $this->fecha->toDateTimeLocalString();                        
+                $materia->save();
+            }
+        }
+    }
+
+    public function desasosiar($idEstudiante, $materiasN, $materiasV)
+    {
+        $materiasN = $materiasN;
+        $materiasV = json_decode($materiasV);
+
+        foreach ($materiasV as $key => $id) 
+        {
+            if(!in_array($id, $materiasN))
+            {
+                $materia = AsignaturaModel::findOrFail($id);
+
+                $estudiantes = json_decode($materia->estudiantes);
+                $index = array_search($idEstudiante, $estudiantes);
+                array_splice($estudiantes, $index);
+                $materia->estudiantes = json_encode($estudiantes);
+                $materia->actualizado = $this->fecha->toDateTimeLocalString();                    
+                $materia->save();
+            }
+        }
     }
 }

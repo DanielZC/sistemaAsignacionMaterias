@@ -3,10 +3,11 @@ $(document).ready(function(){
     $('#tabla_asignaciones').DataTable();
 
     let materiasAsignadas = []
+    let creditos = 0
     let asignaturas = document.getElementById('asignaturas')
 
-    const swalWithBootstrapButtons = Swal.mixin()
     const modal = new bootstrap.Modal('#ModalInformacion')      
+    const swalWithBootstrapButtons = Swal.mixin()
     const Toast = Swal.mixin({
 
         toast: true,
@@ -22,34 +23,44 @@ $(document).ready(function(){
 
     if(asignaturas.value != '')
     {
-        let ids = asignaturas.value
-
-        if(ids.includes('[') && ids.includes(']'))
+        if(asignaturas.value.length > 2)
         {
-            let division1 = asignaturas.value.split('[')[1]
-            let division2 = division1.split(']')[0]
-
-            ids = division2.split(',')
-        }
-        else
-        {
-            ids = ids.split(',')
-        }
-
-        for (let id of ids) {
-
-            if(id.includes('"'))
+            let ids = asignaturas.value
+    
+            if(ids.includes('[') && ids.includes(']'))
             {
-                id = id.split('"')[1]
+                let division1 = asignaturas.value.split('[')[1]
+                let division2 = division1.split(']')[0]
+    
+                ids = division2.split(',')
+            }
+            else
+            {
+                ids = ids.split(',')
+            }
+            
+            let _creditos = 0
+
+            for (let id of ids) {
+    
+                if(id.includes('"'))
+                {
+                    id = id.split('"')[1]
+                }
+    
+                let strId = `btnAsignar_${id}`
+                let materia = document.getElementById(strId).offsetParent.parentElement.children[0].textContent
+                let credito = document.getElementById(strId).offsetParent.parentElement.children[1].textContent
+    
+                crearInsignea(id, materia)
+    
+                materiasAsignadas.push(parseInt(id))
+                document.getElementById(strId).classList.add('disabled')
+                _creditos += parseInt(credito)
             }
 
-            let strId = `btnAsignar_${id}`
-            let materia = document.getElementById(strId).offsetParent.parentElement.children[0].textContent
-
-            crearInsignea(id, materia)
-
-            materiasAsignadas.push(parseInt(id))
-            document.getElementById(strId).classList.add('disabled')
+            creditos = _creditos
+            document.getElementById('creditos').innerText = creditos
         }
     }
 
@@ -82,13 +93,24 @@ $(document).ready(function(){
         e.preventDefault()
         
         document.getElementById('asignaturas').value = materiasAsignadas
-        if(materiasAsignadas.length != 0)
+        console.log(materiasAsignadas.length)
+        console.log(creditos)
+        if(materiasAsignadas.length != 0 && creditos >= 7)
         {
             document.getElementById('formAsignarMateria').submit()
         }
-        else
+        
+        if(materiasAsignadas.length == 0)
         {
             document.getElementById('errorAsignacion').textContent = 'Debe asignar materias'
+        }
+
+        if(creditos < 7)
+        {
+            Toast.fire({
+                icon: 'warning',
+                title: 'La cantidad minima de creditos para registrar un estudiante es 7 '
+            })
         }
     })
 
@@ -97,11 +119,14 @@ $(document).ready(function(){
     
             let id = parseInt(this.attributes.item(4).nodeValue)
             let materia = this.offsetParent.parentElement.children[0].textContent
+            let credito = this.offsetParent.parentElement.children[1].textContent
             
             crearInsignea(id, materia)
 
             materiasAsignadas.push(id)
             this.classList.add('disabled')
+            creditos += parseInt(credito)
+            document.getElementById('creditos').innerText = creditos
         })
     })
 
@@ -113,11 +138,13 @@ $(document).ready(function(){
             if(materiasAsignadas.includes(id))
             {
                 let index = materiasAsignadas.indexOf(id)
-
+                let credito = this.offsetParent.parentElement.children[1].textContent
                 eliminarInsignea(id)
 
                 this.previousElementSibling.classList.remove('disabled')
                 materiasAsignadas.splice(index, 1)
+                creditos -= credito
+                document.getElementById('creditos').innerText = creditos
             }
         })
     })
