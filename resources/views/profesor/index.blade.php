@@ -21,7 +21,7 @@
 @extends('layout')
 @section('contenido')
     <div class="d-flex justify-content-center mb-5">
-        <div class="card w-75">
+        <div class="card w-100">
             <div class="card-header bg-secondary text-white">
                 <h5>Crear nuevo profesor</h5>
             </div>
@@ -166,11 +166,11 @@
                                         <a href="{{ route('profesor.index', ['id' => $profesor->id]) }}" class="btn text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar">
                                             <i class="fa-solid fa-pencil"></i>
                                         </a>
-                                        <form action="{{ route('profesor.eliminar') }}" method="post" id="formularioEliminar">
+                                        <form action="{{ route('profesor.eliminar') }}" method="post">
                                             @csrf
                                             @method('DELETE')
                                             <input type="hidden" name="id" value="{{ $profesor->id }}">
-                                            <button type="button" class="btn text-danger" id="btnEliminar" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar">
+                                            <button type="button" class="btn text-danger" name="btnEliminar" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar">
                                                 <i class="fa-solid fa-trash"></i>
                                             </button>
                                         </form>
@@ -236,10 +236,10 @@
             </div>
         </div>
     </div>
-      
 @endsection
 @section('js')
     <script src="{{ asset('js/eventos/profesores.js') }}"></script>
+    <script src="{{ asset('js/utilities/tooltip.js') }}"></script>
     @if(session('creado'))
         <script src="{{ asset('js/alertas/creado.js') }}"></script>
     @endif
