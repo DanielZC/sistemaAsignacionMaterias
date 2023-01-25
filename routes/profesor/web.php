@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('profesores/{id?}', [ProfesorController::class, 'index'])->name('profesor.index');
-Route::post('profesores/crear', [ProfesorController::class, 'Crear'])->name('profesor.crear');
-Route::put('profesores/editar', [ProfesorController::class, 'Editar'])->name('profesor.editar');
-Route::delete('profesores/eliminar', [ProfesorController::class, 'Eliminar'])->name('profesor.eliminar');
+Route::middleware('auth')->get('profesores/{id?}', [ProfesorController::class, 'index'])->name('profesor.index');
+Route::middleware('auth')->post('profesores/crear', [ProfesorController::class, 'Crear'])->name('profesor.crear');
+Route::middleware('auth')->put('profesores/editar', [ProfesorController::class, 'Editar'])->name('profesor.editar');
+Route::middleware('auth')->delete('profesores/eliminar', [ProfesorController::class, 'Eliminar'])->name('profesor.eliminar');
