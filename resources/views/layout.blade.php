@@ -22,6 +22,17 @@
                 <li class="nav-item">
                     <a class="nav-link {{ str_contains(url()->current(), 'asignaturas') ? 'active' : '' }} " href="{{ route('asignatura.index') }}">Asignaturas</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('logout') }}"
+                        onclick="event.preventDefault();
+                                        document.getElementById('logout-form').submit();">
+                        Cerrar sesion
+                    </a>
+
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        @csrf
+                    </form>
+                </li>
             </ul>
         </div>
         <div class="container shadow pt-3 pb-3 h-100">
