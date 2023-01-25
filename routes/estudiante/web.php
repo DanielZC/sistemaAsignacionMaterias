@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('estudiantes/{id?}', [EstudianteController::class, 'index'])->name('estudiante.index');
-Route::post('estudiantes/crear', [EstudianteController::class, 'Crear'])->name('estudiante.crear');
-Route::put('estudiantes/editar', [EstudianteController::class, 'Editar'])->name('estudiante.editar');
-Route::delete('estudiantes/eliminar', [EstudianteController::class, 'Eliminar'])->name('estudiante.eliminar');
+Route::middleware('auth')->get('estudiantes/{id?}', [EstudianteController::class, 'index'])->name('estudiante.index');
+Route::middleware('auth')->post('estudiantes/crear', [EstudianteController::class, 'Crear'])->name('estudiante.crear');
+Route::middleware('auth')->put('estudiantes/editar', [EstudianteController::class, 'Editar'])->name('estudiante.editar');
+Route::middleware('auth')->delete('estudiantes/eliminar', [EstudianteController::class, 'Eliminar'])->name('estudiante.eliminar');

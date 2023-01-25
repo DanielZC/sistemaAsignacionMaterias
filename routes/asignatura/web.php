@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('asignaturas/{id?}', [AsignaturaController::class, 'Index'])->name('asignatura.index');
-Route::get('asignaturas/detalle/{id?}', [AsignaturaController::class, 'Detalles'])->name('asignatura.detalles');
-Route::post('asignaturas/crear', [AsignaturaController::class, 'Crear'])->name('asignatura.crear');
-Route::put('asignaturas/editar', [AsignaturaController::class, 'Editar'])->name('asignatura.editar');
-Route::delete('asignaturas/eliminar', [AsignaturaController::class, 'Eliminar'])->name('asignatura.eliminar');
+Route::middleware('auth')->get('asignaturas/{id?}', [AsignaturaController::class, 'Index'])->name('asignatura.index');
+Route::middleware('auth')->get('asignaturas/detalle/{id?}', [AsignaturaController::class, 'Detalles'])->name('asignatura.detalles');
+Route::middleware('auth')->post('asignaturas/crear', [AsignaturaController::class, 'Crear'])->name('asignatura.crear');
+Route::middleware('auth')->put('asignaturas/editar', [AsignaturaController::class, 'Editar'])->name('asignatura.editar');
+Route::middleware('auth')->delete('asignaturas/eliminar', [AsignaturaController::class, 'Eliminar'])->name('asignatura.eliminar');
